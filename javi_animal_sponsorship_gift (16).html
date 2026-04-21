@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Choose Your Animal</title>
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --bg-soft: #f8f5ee;
+      --bg-green: #dce6d5;
+      --border: #d6cec0;
+      --text: #314031;
+      --muted: #6f7868;
+      --accent: #6b8e6b;
+      --accent-dark: #5c7d5c;
+      --accent-soft: #eef2e8;
+      --accent-soft-border: #d5dfca;
+      --shadow: 0 16px 34px rgba(92, 88, 77, 0.08);
+      --radius-xl: 36px;
+      --radius-lg: 24px;
+      --max-width: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: min(var(--max-width), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 16px 0;
+    }
+
+    .hero {
+      min-height: calc(100vh - 32px);
+      padding: 60px 40px;
+      display: grid;
+      grid-template-columns: minmax(320px, 460px) minmax(380px, 1fr);
+      align-items: center;
+      gap: 40px;
+      background: linear-gradient(90deg, var(--bg) 0%, var(--bg) 48%, var(--bg-green) 48%, var(--bg-green) 100%);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+
+    .hero-content {
+      width: 100%;
+      max-width: 460px;
+      text-align: left;
+      justify-self: start;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 12px 0 0;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      line-height: 1.03;
+      letter-spacing: -0.04em;
+      color: var(--text);
+    }
+
+    .gradient-text { color: var(--text); }
+
+    .subtitle {
+      margin-top: 20px;
+      font-size: 1.08rem;
+      line-height: 1.65;
+      color: #5a6a5a;
+    }
+
+    .cta-row {
+      display: flex;
+      justify-content: flex-start;
+      gap: 14px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .micro-note {
+      margin-top: 16px;
+      font-size: 0.92rem;
+      color: #7d8777;
+      text-align: left;
+    }
+
+    button,
+    a.button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      color: white;
+      background: var(--accent);
+      box-shadow: none;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    button:hover,
+    a.button:hover {
+      transform: translateY(-2px);
+      background: var(--accent-dark);
+    }
+
+    .button.secondary {
+      color: #5a6a5a;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-soft-border);
+      box-shadow: none;
+    }
+
+    .button.secondary:hover {
+      background: #e5ecdc;
+    }
+
+    .hero-visual {
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+      display: flex;
+      align-items: stretch;
+      justify-content: flex-end;
+    }
+
+    .hero-image-wrap {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      overflow: hidden;
+      /* background: #f4f1ea; match page background so rounded corners look clean */
+    }
+
+    .hero-image {
+      width: min(100%, 760px);
+      height: 100%;
+      min-height: 520px;
+      object-fit: cover;
+      object-position: center right;
+      display: block;
+      border-radius: 36px 0 0 36px;
+      /* box-shadow: 0 24px 60px rgba(58, 53, 45, 0.12);
+      background: #f4f1ea; /* ensures no gray/green bleed-through */
+    }
+
+    .selection-shell {
+      display: none;
+      opacity: 0;
+      transform: translateY(24px);
+      margin-top: 16px;
+      min-height: calc(100vh - 32px);
+      padding: 20px 0 0;
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .selection-shell.active { display: block; }
+    .selection-shell.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      text-align: center;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    .section-subtitle {
+      max-width: 760px;
+      margin: 14px auto 0;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1.02rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      min-height: 250px;
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      background: var(--bg-soft);
+      border: 1px solid rgba(214, 206, 192, 0.9);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease, background 0.24s ease;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.32), transparent 42%);
+      pointer-events: none;
+    }
+
+    .card:hover {
+      transform: translateY(-6px) scale(1.01);
+      border-color: #b9c7ae;
+      box-shadow: 0 22px 40px rgba(92, 88, 77, 0.12);
+      background: #fbf8f2;
+    }
+
+    .card.selected {
+      border-color: #93aa7c;
+      box-shadow: 0 0 0 2px rgba(147, 170, 124, 0.18), 0 22px 40px rgba(92, 88, 77, 0.12);
+      background: #fbf8f2;
+    }
+
+    .emoji {
+      font-size: 2.3rem;
+      margin-bottom: 16px;
+    }
+
+    .animal-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .animal-copy {
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 0.98rem;
+      max-width: 26ch;
+    }
+
+    .animal-copy em {
+      color: #516151;
+      font-style: italic;
+    }
+
+    .helper {
+      text-align: center;
+      margin-top: 18px;
+      color: #7d8777;
+      font-size: 0.95rem;
+    }
+
+    .analyzing {
+      display: none;
+      text-align: center;
+      margin-top: 24px;
+      color: var(--accent);
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      animation: pulse 1.4s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-1px); }
+      100% { opacity: 0.4; transform: translateY(0); }
+    }
+
+    .result-stage {
+      display: none;
+      min-height: calc(100vh - 32px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px 0;
+    }
+
+    .result {
+      width: min(100%, 980px);
+      border-radius: 30px;
+      padding: 32px 24px;
+      text-align: center;
+      animation: fadeUp 0.5s ease both;
+      background: var(--bg-soft);
+      border: 1px solid rgba(214, 206, 192, 0.9);
+      box-shadow: var(--shadow);
+      pointer-events: auto;
+      margin: 0 auto;
+    }
+
+    .result-emoji {
+      font-size: 3.5rem;
+      margin-bottom: 8px;
+    }
+
+    .result-title {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    .result-text {
+      max-width: 900px;
+      margin: 14px auto 0;
+      font-size: 1.04rem;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+
+    .selected-name {
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .benefits {
+      margin-top: 24px;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+
+    .tiny {
+      margin-top: 16px;
+      color: #7d8777;
+      font-size: 0.92rem;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        padding: 40px 24px;
+        /*background: linear-gradient(180deg, var(--bg) 0%, var(--bg) 46%, var(--bg-green) 46%, var(--bg-green) 100%);*/
+      }
+
+      .hero-content { max-width: 100%; }
+      .hero-visual { min-height: 320px; }
+      .hero-image {
+        width: 100%;
+        min-height: 320px;
+        border-radius: 28px;
+      }
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        width: min(calc(100% - 18px), var(--max-width));
+        padding: 10px 0;
+      }
+
+      .hero,
+      .result {
+        border-radius: 26px;
+      }
+
+      .hero {
+        min-height: calc(100vh - 20px);
+        padding: 28px 18px 22px;
+      }
+
+      .selection-shell,
+      .result {
+        padding: 24px 16px;
+      }
+
+      .cards { grid-template-columns: 1fr; }
+      .card { min-height: auto; }
+      .hero-image {
+        min-height: 260px;
+        border-radius: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div class="hero-content">
+        <div class="eyebrow">Birthday Mission Activated</div>
+        <h1><span class="gradient-text">Choose Your Animal</span></h1>
+        <p class="subtitle">
+          You said you don’t need more stuff. <br/>
+          So I got you something… that isn’t for you 😄 <br/>
+          You’re about to become an <strong>official animal sponsor</strong> at <strong>Gut Aiderbichl</strong>.
+        </p>
+        <div class="cta-row">
+          <button id="startButton">Start Mission</button>
+        </div>
+        <div class="micro-note">One choice. Many animals supported thanks to your good heart.</div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-image-wrap">
+          <img class="hero-image" src="sheep_image.png" alt="Minimalist lamb portrait in a green countryside landscape" />
+        </div>
+      </div>
+    </section>
+
+    <section class="selection-shell" id="selectionSection">
+      <h2 class="section-title">Your candidates</h2>
+      <p class="section-subtitle">
+        Pick the animal energy that feels most like you — or go full main character and choose a specific one on the Gut Aiderbichl website.
+      </p>
+
+      <div class="cards" id="cardsContainer">
+        <div class="card" data-animal="Sheep" data-emoji="🐑" data-link="https://www.gut-aiderbichl.com/tierarten/schafe/" data-group-link="https://www.gut-aiderbichl.com/patenschaft/schafe/">
+          <div class="emoji">🐑</div>
+          <div class="animal-title">Sheep</div>
+          <div class="animal-copy">
+            Soft. Peaceful. Slightly judging you.<br />
+            Low drama, high fluff.
+          </div>
+        </div>
+
+        <div class="card" data-animal="Goat" data-emoji="🐐" data-link="https://www.gut-aiderbichl.com/tierarten/ziegen/" data-group-link="https://www.gut-aiderbichl.com/patenschaft/ziegen/">
+          <div class="emoji">🐐</div>
+          <div class="animal-title">Goat</div>
+          <div class="animal-copy">
+            High energy. Slightly unhinged. Climbs things it shouldn’t.<br />
+            <em>Might remind you of someone.</em>
+          </div>
+        </div>
+
+        <div class="card" data-animal="Pig" data-emoji="🐖" data-link="https://www.gut-aiderbichl.com/tierarten/schweine/" data-group-link="https://www.gut-aiderbichl.com/patenschaft/schweine/">
+          <div class="emoji">🐖</div>
+          <div class="animal-title">Pig</div>
+          <div class="animal-copy">
+            Smart. Food-driven. Emotionally complex.<br />
+            Would outsmart both of us.
+          </div>
+        </div>
+
+        <div class="card" data-animal="Fox" data-emoji="🦊" data-link="https://www.gut-aiderbichl.com/tierarten/fuechse/" data-group-link="https://www.gut-aiderbichl.com/patenschaft/fuechse/">
+          <div class="emoji">🦊</div>
+          <div class="animal-title">Fox</div>
+          <div class="animal-copy">
+            Clever. Curious. Slightly chaotic.<br />
+            Sponsor to learn "what does the fox say".
+          </div>
+        </div>
+
+        <div class="card" data-animal="Cat" data-emoji="🐱" data-link="https://www.gut-aiderbichl.com/tierarten/katzen/" data-group-link="https://www.gut-aiderbichl.com/patenschaft/katzen/">
+          <div class="emoji">🐱</div>
+          <div class="animal-title">Cat</div>
+          <div class="animal-copy">
+            Independent. Elegant. Selectively affectionate.<br />
+            You don’t own them. They own you.
+          </div>
+        </div>
+
+        <div class="card" data-animal="VIP Option" data-emoji="⭐" data-link="https://www.gut-aiderbichl.com/tiere/unsere-tiere/" data-vip="true">
+          <div class="emoji">⭐</div>
+          <div class="animal-title">Freespirit Option</div>
+          <div class="animal-copy">
+            Explore all animals and choose your own — follow your instinct.
+          </div>
+        </div>
+      </div>
+
+      <p class="helper">Click a card to reveal your destiny.</p>
+      <div class="analyzing" id="analyzing">Analyzing personality match…</div>
+
+      <section class="result-stage" id="resultStage">
+        <section class="result" id="resultBox">
+          <div class="result-emoji" id="resultEmoji">🐑</div>
+          <h3 class="result-title">Excellent choice.</h3>
+          <p class="result-text" id="resultText"></p>
+          <div class="button-row" id="resultButtons"></div>
+          <div class="benefits">
+            ✔ Free entry to Gut Aiderbichl farms<br>
+            ✔ Personal sponsorship certificate<br>
+            ✔ Spy your animal via webcams<br>
+            ✔ Visit them in real life 🐾
+          </div>
+          <div class="tiny">This sponsorship will be gifted to you for 1 year (€10/month).</div>
+        </section>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    const startButton = document.getElementById('startButton');
+    const selectionSection = document.getElementById('selectionSection');
+    const cards = document.querySelectorAll('.card');
+    const analyzing = document.getElementById('analyzing');
+    const resultStage = document.getElementById('resultStage');
+    const resultBox = document.getElementById('resultBox');
+    const resultEmoji = document.getElementById('resultEmoji');
+    const resultText = document.getElementById('resultText');
+    const resultButtons = document.getElementById('resultButtons');
+
+    function revealSelectionSection() {
+      if (!selectionSection.classList.contains('active')) {
+        selectionSection.classList.add('active');
+        requestAnimationFrame(() => {
+          selectionSection.classList.add('visible');
+        });
+      }
+      setTimeout(() => {
+        selectionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 20);
+    }
+
+    function getAnimalReveal(animal) {
+      const reveals = {
+        Sheep: 'You have chosen the <span class="selected-name">Sheep</span>.<br /><br />Calm, cozy, and a little bit selective. You appreciate peace, softness, and good vibes — but probably still have opinions.',
+        Goat: 'You have chosen the <span class="selected-name">Goat</span>.<br /><br />Chaotic energy, curious mind, slightly rebellious. Honestly... very accurate.',
+        Pig: 'You have chosen the <span class="selected-name">Pig</span>.<br /><br />Smart, strategic, and food-motivated. A sophisticated life optimizer, really.',
+        Fox: 'You have chosen the <span class="selected-name">Fox</span>.<br /><br />Clever, observant, and a bit mischievous. You notice everything and play the long game — quietly iconic.',
+        Cat: 'You have chosen the <span class="selected-name">Cat</span>.<br /><br />Independent, iconic, and selective with your attention. A premium personality choice.',
+        'VIP Option': 'You have chosen the <span class="selected-name">Freespirit Option</span>.<br /><br />Explorer mode activated. No limits, no predefined path — just you discovering the animal that feels right.'
+      };
+      return reveals[animal] || '';
+    }
+
+    function getGroupLabel(animal) {
+      const labels = {
+        Sheep: 'Support the sheep group',
+        Goat: 'Support the goat group',
+        Pig: 'Support the pig group',
+        Fox: 'Support the fox group',
+        Cat: 'Support the cat group'
+      };
+      return labels[animal] || 'See sponsorship options';
+    }
+
+    startButton.addEventListener('click', revealSelectionSection);
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        cards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+
+        const animal = card.dataset.animal;
+        const emoji = card.dataset.emoji;
+        const link = card.dataset.link;
+        const groupLink = card.dataset.groupLink;
+        const isVip = card.dataset.vip === 'true';
+
+        analyzing.style.display = 'block';
+        resultStage.style.display = 'none';
+
+        setTimeout(() => {
+          analyzing.style.display = 'none';
+          resultEmoji.textContent = emoji;
+          resultText.innerHTML = getAnimalReveal(animal);
+
+          if (isVip) {
+            resultButtons.innerHTML = `
+              <a class="button" href="${link}" target="_blank" rel="noopener noreferrer" onclick="window.open('${link}','_blank')">Choose your animal</a>
+            `;
+          } else {
+            resultButtons.innerHTML = `
+              <a class="button" href="${link}" target="_blank" rel="noopener noreferrer" onclick="window.open('${link}','_blank')">Choose a specific animal</a>
+              <a class="button secondary" href="${groupLink}" target="_blank" rel="noopener noreferrer" onclick="window.open('${groupLink}','_blank')">${getGroupLabel(animal)}</a>
+            `;
+          }
+
+          resultStage.style.display = 'flex';
+          setTimeout(() => {
+            resultStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 20);
+        }, 850);
+      });
+    });
+  </script>
+</body>
+</html>
